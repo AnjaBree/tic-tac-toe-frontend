@@ -3,9 +3,12 @@ import { io, Socket } from 'socket.io-client';
 import { motion, AnimatePresence } from 'framer-motion';
 import { RefreshCw } from 'lucide-react';
 
-// ✅ Use environment variable for backend URL
+
+
 const API_URL = import.meta.env.VITE_API_URL;
-const socket: Socket = io(API_URL); // <-- dynamic backend URL
+const socket: Socket = io(API_URL);
+console.log("Using API_URL:", API_URL);
+
 
 interface RoomState {
   board: (string | null)[];
