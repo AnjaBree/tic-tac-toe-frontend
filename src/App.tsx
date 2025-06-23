@@ -3,14 +3,16 @@ import { io, Socket } from 'socket.io-client';
 import { motion, AnimatePresence } from 'framer-motion';
 import { RefreshCw } from 'lucide-react';
 
+// ✅ Use environment variable for backend URL
+const API_URL = import.meta.env.VITE_API_URL;
+const socket: Socket = io(API_URL); // <-- dynamic backend URL
+
 interface RoomState {
   board: (string | null)[];
   players: string[];
   turn: 'X' | 'O';
   winnerLine?: number[];
 }
-
-const socket: Socket = io('http://localhost:5000');
 
 const Cell: React.FC<{ value: string | null; onClick: () => void; highlight: boolean }> = ({ value, onClick, highlight }) => (
   <motion.button
@@ -50,12 +52,18 @@ const App: React.FC = () => {
     return () => { socket.off(); };
   }, [symbol]);
 
-  const joinRoom = () => { if (roomId.trim()) socket.emit('join', roomId); };
+  const joinRoom = () => {
+    if (roomId.trim()) socket.emit('join', roomId);
+  };
+
   const play = useCallback((idx: number) => {
     if (!joined || state.board[idx] || state.turn !== symbol) return;
     socket.emit('play', { roomId, index: idx, symbol });
   }, [joined, state.board, state.turn, symbol, roomId]);
-  const reset = () => { socket.emit('reset', roomId); };
+
+  const reset = () => {
+    socket.emit('reset', roomId);
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-50 to-white flex items-center justify-center p-6">
